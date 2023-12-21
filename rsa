@@ -1,52 +1,57 @@
 #!/usr/bin/python3
-"""Find two prime factors of a number."""
-
-import subprocess
+"""prime factorization of a list of numbers from a file"""
 import sys
+import time
+from math import sqrt, ceil
 
 
-def check_factor(*args):
-    if len(args) != 3:
-        num2 = 1
-        count = 0
-        for a in args:
-            if count > 1:
-                num2 *= int(a)
-            count += 1
+# function to check if a number is prime
+def is_prime(num):
+    if num < 2:
+        return False
+    for i in range(2, int(sqrt(num)) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+
+# function to factor a single RSA number using the trial division method
+def factor_rsa_number(num):
+    factors = []
+    while num % 2 == 0:
+        factors.append(2)
+        num = num // 2
+    i = 3
+    while i <= sqrt(num):
+        if num % i == 0:
+            factors.append(i)
+            num //= i
+        else:
+            i = i + 2
+    if num > 2:
+        factors.append(num)
+    if len(factors) == 1:
+        p = factors[0]
+        q = num // p
+        return (p, q)
     else:
-        num2 = int(args[2])
-
-    num1 = int(args[1])
-    num = args[0].replace(':', '=')
-
-    result = 1 if num2 > num1 else 0
-    if result == 1:
-        num1, num2 = num2, num1
-
-    return (num1, num2)
-
-
-def main(filename):
-    try:
-        with open(filename, 'r') as file:
-            lines = file.read().splitlines()
-
-        for line in lines:
-            result = subprocess.check_output(['factor', line], text=True)\
-                .strip()
-            factors = result.split(":")[1].split()
-            res = check_factor(result, *factors)
-
-            print(f"{lines[0]}={res[0]}*{res[1]}")
-    except FileNotFoundError:
-        print(f"Error: File '{filename}' not found.")
-        sys.exit(1)
+        prodquot = []
+        for factor in factors:
+            if is_prime(factor):
+                prodquot.append(factor)
+            else:
+                p, q = factor_rsa_number(factor)
+                prodquot.append(p)
+                prodquot.append(q)
+        return tuple(prodquot)
 
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: rsa <file>")
-        sys.exit(1)
-
-    filename = sys.argv[1]
-    main(filename)
+input = sys.argv[1]
+with open(input, 'r') as f:
+    rsa_nums = [int(line.strip()) for line in f.readlines()]
+start = time.time()
+for num in rsa_nums:
+    p, q = factor_rsa_number(num)
+    print(f"{num}={q}*{p}")
+end_time = time.time()
+exec_time = end_time - start
