@@ -1,0 +1,52 @@
+#!/usr/bin/python3
+"""Find two prime factors of a number."""
+
+import subprocess
+import sys
+
+
+def check_factor(*args):
+    if len(args) != 3:
+        num2 = 1
+        count = 0
+        for a in args:
+            if count > 1:
+                num2 *= int(a)
+            count += 1
+    else:
+        num2 = int(args[2])
+
+    num1 = int(args[1])
+    num = args[0].replace(':', '=')
+
+    result = 1 if num2 > num1 else 0
+    if result == 1:
+        num1, num2 = num2, num1
+
+    return (num1, num2)
+
+
+def main(filename):
+    try:
+        with open(filename, 'r') as file:
+            lines = file.read().splitlines()
+
+        for line in lines:
+            result = subprocess.check_output(['factor', line], text=True)\
+                .strip()
+            factors = result.split(":")[1].split()
+            res = check_factor(result, *factors)
+
+            print(f"{lines[0]}={res[0]}*{res[1]}")
+    except FileNotFoundError:
+        print(f"Error: File '{filename}' not found.")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: rsa <file>")
+        sys.exit(1)
+
+    filename = sys.argv[1]
+    main(filename)
