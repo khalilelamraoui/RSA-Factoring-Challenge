@@ -31,6 +31,6 @@ if __name__ == "__main__":
         factors = factor(number)
         if factors:
             print(f"{number}={factors[1]}*{factors[0]}")
-        if time.time() - start > 60:
+        if time.time() - start > 5:
             print("Timeout")
             exit()
