@@ -1,36 +1,34 @@
 #!/usr/bin/python3
+"""Factor a list of numbers from a file."""
 
-import sys
+from math import sqrt
+from sys import argv
 import time
 
 
-def factor(n):
-    """Return a list of the prime factors for a natural number."""
-    for i in range(2, int(n ** 0.5) + 1):
-        if n % i == 0:
-            return (i, n // i)
-    return None
+def open_read_file(file_name):
+    """Read file and add to an array"""
+    with open(file_name, "r", encoding="utf-8") as file:
+        lines = file.readlines()
+    return [int(line) for line in lines]
+
+
+def find_and_times(n):
+    """Factorize given number"""
+    for i in range(1, n):
+        if n == (n // i) * i:
+            print(f"{n}={n // i}*{i}")
+            break
+
+
+def fac_list(ls):
+    """Factorize every number in the list"""
+    for num in ls:
+        find_and_times(num)
 
 
 if __name__ == "__main__":
-    """Call main() if script invoked directly."""
-    if len(sys.argv) != 2:
-        print("Usage: factors <file>")
-        exit()
-
-    filename = sys.argv[1]
-    try:
-        with open(filename, 'r') as file:
-            rows = file.readlines()
-    except FileNotFoundError:
-        print("Error: file '{filename}' not found")
-        exit() 
-    start = time.time()
-    for row in rows:
-        number = int(row.strip())
-        factors = factor(number)
-        if factors:
-            print(f"{number}={factors[1]}*{factors[0]}")
-        if time.time() - start > 5:
-            print("Timeout")
-            exit()
+    if len(argv) == 2:
+        fac_list(open_read_file(argv[1]))
+    else:
+        print("Usage: {} <file>".format(argv[0]))
