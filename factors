@@ -1,0 +1,36 @@
+#!/usr/bin/python3
+
+import sys
+
+
+def factor(n):
+    factors = []
+    i = 2
+    while i * i <= n:
+        if n % i:
+            i += 1
+        else:
+            n //= i
+            factors.append(i)
+    if n > 1:
+        factors.append(n)
+    return factors
+
+
+def main(filename):
+    with open(filename, 'r') as file:
+        rows = file.read().splitlines()
+
+    for row in rows:
+        number = int(row)
+        factors = factor(number)
+        print(f"{number}={'*'.join(map(str, factors))}")
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: factors <file>")
+        sys.exit(1)
+
+    filename = sys.argv[1]
+    main(filename)
